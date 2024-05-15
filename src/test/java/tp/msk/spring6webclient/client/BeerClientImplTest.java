@@ -15,7 +15,15 @@ class BeerClientImplTest {
     @Autowired
     BeerClient client;
 
-
+    @Test
+    void testGetBeersJsonNode() {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        client.listBeersJsonNode().subscribe(jsonNode -> {
+            System.out.println(jsonNode.toPrettyString() );
+            atomicBoolean.set(true);
+        });
+        await().untilTrue(atomicBoolean);
+    }
 
     @Test
     void testListBeersMap() {
