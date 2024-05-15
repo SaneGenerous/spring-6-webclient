@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import tp.msk.spring6webclient.model.BeerDTO;
 
 import java.util.Map;
 
@@ -14,7 +15,13 @@ public class BeerClientImpl implements BeerClient {
     private final WebClient webClient;
 
     public BeerClientImpl(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8080").build();
+        this.webClient = webClientBuilder.build();
+    }
+
+    @Override
+    public Flux<BeerDTO> listBeerDtos() {
+        return webClient.get().uri(BEER_PATH)
+                .retrieve().bodyToFlux(BeerDTO.class);
     }
 
     @Override
@@ -25,13 +32,13 @@ public class BeerClientImpl implements BeerClient {
 
     @Override
     public Flux<Map> listBeersMap() {
-        return webClient.get().uri(BEER_PATH, Map.class)
+        return webClient.get().uri(BEER_PATH)
                 .retrieve().bodyToFlux(Map.class);
     }
 
     @Override
     public Flux<String> listBeers() {
-        return webClient.get().uri(BEER_PATH, String.class)
+        return webClient.get().uri(BEER_PATH)
                 .retrieve().bodyToFlux(String.class);
     }
 }
