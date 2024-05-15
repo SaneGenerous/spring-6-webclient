@@ -1,9 +1,11 @@
 package tp.msk.spring6webclient.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.boot.autoconfigure.web.embedded.NettyWebServerFactoryCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import tp.msk.spring6webclient.model.BeerDTO;
 
 import java.util.Map;
@@ -12,10 +14,18 @@ import java.util.Map;
 public class BeerClientImpl implements BeerClient {
 
     public static final String BEER_PATH = "/api/v3/beer";
+    public static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
     private final WebClient webClient;
 
-    public BeerClientImpl(WebClient.Builder webClientBuilder) {
+    public BeerClientImpl(WebClient.Builder webClientBuilder, NettyWebServerFactoryCustomizer nettyWebServerFactoryCustomizer) {
         this.webClient = webClientBuilder.build();
+    }
+
+    @Override
+    public Mono<BeerDTO> getBeerById(String id) {
+        return webClient.get().uri(uriBuilder -> uriBuilder.path(BEER_PATH_ID)
+                        .build(id))
+                .retrieve().bodyToMono(BeerDTO.class);
     }
 
     @Override
