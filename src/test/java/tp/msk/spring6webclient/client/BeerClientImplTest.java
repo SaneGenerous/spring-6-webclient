@@ -3,7 +3,9 @@ package tp.msk.spring6webclient.client;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import tp.msk.spring6webclient.model.BeerDTO;
 
+import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.awaitility.Awaitility.await;
@@ -14,6 +16,25 @@ class BeerClientImplTest {
 
     @Autowired
     BeerClient client;
+
+    @Test
+    void testCreateBeer() {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        BeerDTO newDto = BeerDTO.builder()
+                .beerName("Mango Bobs")
+                .beerStyle("IPA")
+                .price(new BigDecimal("12.99"))
+                .quantityOnHand(500)
+                .upc("123456")
+                .build();
+
+        client.createBeer(newDto)
+                .subscribe(dto -> {
+                    System.out.println(dto.toString());
+                    atomicBoolean.set(true);
+                });
+        await().untilTrue(atomicBoolean);
+    }
 
     @Test
     void testGetBeerByBeerStyle() {
